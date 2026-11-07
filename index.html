@@ -99,10 +99,10 @@ function boot(){
 const h=React.createElement,{useState,useEffect,useContext,createContext}=React;
 
 // ---------- DATABASE (Supabase) – vyplňte pred nasadením / fill in before deploy ----------
-const CFG={url:"",key:""};   // napr. url:"https://xxxx.supabase.co", key:"<anon public key>"
+const CFG={url:"https://itswxfjdqmzeslmvxshh.supabase.co",key:"sb_publishable_7gGrAlOMhAo-OVGivL-m4g_LWnmrjnS"};   // napr. url:"https://xxxx.supabase.co", key:"<anon public key>"
 const LIVE=!!(CFG.url&&CFG.key);
 async function rpc(fn,args){
-  const r=await fetch(CFG.url+"/rest/v1/rpc/"+fn,{method:"POST",headers:{"Content-Type":"application/json",apikey:CFG.key,Authorization:"Bearer "+CFG.key},body:JSON.stringify(args)});
+  const r=await fetch(CFG.url+"/rest/v1/rpc/"+fn,{method:"POST",headers:{"Content-Type":"application/json",apikey:CFG.key},body:JSON.stringify(args)});
   if(!r.ok)throw new Error("HTTP "+r.status);
   return r.json();
 }
