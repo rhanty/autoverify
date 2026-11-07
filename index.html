@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0b0d12">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>AutoVerify</title>
+<style>
+:root{color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+--bg:#0b0d12;--card:#151922;--card2:#1c212c;--line:#262c39;--tx:#eef1f6;--mut:#8b93a5;--acc:#ff6a1a;--ok:#22c55e;--err:#ef4444}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:#0b0d12;color:#eef1f6;font-family:-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+#root{min-height:100vh;display:flex;justify-content:center}
+.app{width:100%;max-width:430px;min-height:100vh;display:flex;flex-direction:column;background:radial-gradient(120% 50% at 50% 0,#1a1f2c 0,#0b0d12 60%)}
+.top{padding:18px 20px 8px;display:flex;align-items:center;gap:10px}
+.logo{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#ff6a1a,#c2410c);display:grid;place-items:center;flex:none}
+.grow{flex:1;min-width:0}
+.brand{font-weight:800;font-size:18px}.brand span{color:var(--acc)}
+.sub{font-size:12px;color:var(--mut)}
+.lang{display:flex;align-items:center;gap:4px;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:0 6px 0 8px;color:var(--mut)}
+.lang select{background:none;border:0;color:var(--tx);font:600 13px sans-serif;padding:8px 2px;outline:0}
+.lang option{background:#151922}
+.seg{margin:10px 20px 4px;display:grid;grid-template-columns:1fr 1fr;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:4px}
+.seg button{border:0;background:none;color:var(--mut);padding:10px;border-radius:10px;font:600 14px sans-serif;display:flex;gap:6px;align-items:center;justify-content:center;cursor:pointer}
+.seg button.on{background:var(--card2);color:var(--tx);box-shadow:inset 0 0 0 1px var(--line)}
+.seg button.on svg{color:var(--acc)}
+main{padding:12px 20px 30px;flex:1}
+h2{margin:8px 0 4px;font-size:22px}
+p.lead{margin:0 0 16px;color:var(--mut);font-size:14px;line-height:1.45}
+label{display:block;font-size:12px;font-weight:600;color:var(--mut);margin:14px 0 6px;text-transform:uppercase;letter-spacing:.6px}
+.field{display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:0 14px}
+.field:focus-within{border-color:var(--acc)}
+.field svg{color:var(--mut);flex:none}
+input,textarea{flex:1;min-width:0;background:none;border:0;outline:0;color:var(--tx);font:500 16px sans-serif;padding:14px 0}
+textarea{resize:none;min-height:96px;line-height:1.4}
+.mono{font-family:ui-monospace,Menlo,Consolas,monospace;letter-spacing:1.5px}
+.cnt{font-size:11px;color:var(--mut);white-space:nowrap}
+.btn{width:100%;border:0;border-radius:14px;padding:16px;font:700 16px sans-serif;color:#fff;display:flex;gap:8px;align-items:center;justify-content:center;cursor:pointer;background:linear-gradient(135deg,#ff6a1a,#ea580c);box-shadow:0 8px 24px -8px rgba(255,106,26,.6);margin-top:18px}
+.btn:disabled{opacity:.5;box-shadow:none}
+.btn.ghost{background:var(--card2);box-shadow:none;border:1px dashed #3a4252;margin-top:10px;padding:13px;font-size:14px}
+.err{color:var(--err);font-size:12px;margin-top:6px}
+.toast{margin-top:16px;background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.45);color:#86efac;border-radius:14px;padding:14px;display:flex;gap:10px;align-items:flex-start;font-size:14px;animation:pop .3s}
+.toast b{color:var(--ok);display:block}
+@keyframes pop{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.scanfx{position:relative;overflow:hidden}
+.scanfx:after{content:"";position:absolute;left:0;right:0;height:2px;background:var(--acc);box-shadow:0 0 14px var(--acc);animation:scan 1s linear infinite}
+@keyframes scan{from{top:0}to{top:100%}}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.chip{background:var(--card);border:1px solid var(--line);color:var(--mut);border-radius:999px;padding:6px 10px;font:600 11px ui-monospace,Menlo,monospace;cursor:pointer}
+.msg{margin-top:16px;border-radius:16px;padding:18px;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.4);display:flex;gap:10px;align-items:center;color:#fca5a5;font-size:14px}
+.card{margin-top:16px;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px}
+.vin{font:700 15px ui-monospace,Menlo,monospace;letter-spacing:1.5px;word-break:break-all}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+.stat{background:var(--card2);border-radius:12px;padding:12px}
+.stat small{color:var(--mut);font-size:11px;text-transform:uppercase;letter-spacing:.5px;display:flex;gap:5px;align-items:center}
+.stat div{font-size:19px;font-weight:800;margin-top:4px}
+.tl{position:relative;margin-top:14px;padding-left:22px}
+.tl:before{content:"";position:absolute;left:6px;top:6px;bottom:6px;width:2px;background:var(--line)}
+.it{position:relative;background:var(--card2);border-radius:14px;padding:12px 14px;margin-bottom:10px}
+.it:before{content:"";position:absolute;left:-21px;top:16px;width:10px;height:10px;border-radius:50%;background:var(--ok);box-shadow:0 0 0 3px #0b0d12}
+.it.lk:before{background:var(--acc)}
+.it .d{font-size:12px;color:var(--mut)}
+.it .k{font-weight:700;margin:4px 0}
+.it .t{font-size:14px;line-height:1.4}
+.blur{filter:blur(6px);user-select:none;pointer-events:none}
+.fine{text-align:center;color:var(--mut);font-size:12px;margin-top:10px}
+.sheet-bg{position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:flex-end;justify-content:center;z-index:20}
+.sheet{width:100%;max-width:430px;background:var(--card);border-radius:24px 24px 0 0;padding:22px 20px calc(24px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--line)}
+.pbtn{width:100%;border:0;border-radius:12px;padding:15px;margin-top:10px;font:600 16px sans-serif;display:flex;gap:8px;justify-content:center;align-items:center;cursor:pointer}
+.ap{background:#fff;color:#000}.gp{background:#000;color:#fff;border:1px solid #444}
+.spin{width:44px;height:44px;border:4px solid var(--line);border-top-color:var(--acc);border-radius:50%;animation:rot .8s linear infinite;margin:20px auto}
+@keyframes rot{to{transform:rotate(360deg)}}
+.back{background:none;border:0;color:var(--mut);font:600 13px sans-serif;cursor:pointer;margin-top:14px;width:100%}
+.don{margin:0 20px calc(20px + env(safe-area-inset-bottom,0px));padding:16px;border-top:1px solid var(--line);text-align:center}
+.don a{display:inline-flex;gap:6px;align-items:center;margin-top:10px;padding:10px 18px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--tx);font:600 14px sans-serif;text-decoration:none}
+.don a svg{color:#f43f5e}
+.mono{direction:ltr}
+[dir=rtl] .tl{padding-left:0;padding-right:22px}
+[dir=rtl] .tl:before{left:auto;right:6px}
+[dir=rtl] .it:before{left:auto;right:-21px}
+.trbar{display:flex;gap:6px;align-items:center;margin-top:10px;font-size:12px;color:var(--mut)}
+.trbar button{margin-left:auto;background:none;border:0;color:var(--acc);font:600 12px sans-serif;cursor:pointer}
+.credit{margin-top:14px;font-size:10px;letter-spacing:.4px;color:#5b6375}
+.boot{padding:40px 24px;text-align:center;color:#8b93a5;font:14px sans-serif;line-height:1.5}
+</style>
+</head>
+<body>
+<div id="root"><div class="boot">Loading AutoVerify…</div></div>
+<script>
+function showErr(m){var r=document.getElementById("root");r.innerHTML='<div class="boot" style="color:#fca5a5">Chyba / Error:<br>'+String(m).replace(/</g,"&lt;")+'</div>';}
+window.addEventListener("error",function(e){showErr(e.message||"script error");});
+function ld(list,ok){var i=0;(function next(){if(i>=list.length)return showErr("Cannot load "+list[0]);var s=document.createElement("script");s.src=list[i++];s.onload=ok;s.onerror=next;document.head.appendChild(s);})();}
+ld(["https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js","https://cdn.jsdelivr.net/npm/react@18.3.1/umd/react.production.min.js"],function(){
+ld(["https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js","https://cdn.jsdelivr.net/npm/react-dom@18.3.1/umd/react-dom.production.min.js"],boot);});
+
+function boot(){
+const h=React.createElement,{useState,useEffect,useContext,createContext}=React;
+
+// ---------- DATABASE (Supabase) – vyplňte pred nasadením / fill in before deploy ----------
+const CFG={url:"",key:""};   // napr. url:"https://xxxx.supabase.co", key:"<anon public key>"
+const LIVE=!!(CFG.url&&CFG.key);
+async function rpc(fn,args){
+  const r=await fetch(CFG.url+"/rest/v1/rpc/"+fn,{method:"POST",headers:{"Content-Type":"application/json",apikey:CFG.key,Authorization:"Bearer "+CFG.key},body:JSON.stringify(args)});
+  if(!r.ok)throw new Error("HTTP "+r.status);
+  return r.json();
+}
+// ---------- PREKLADY / TRANSLATIONS ----------
+const T={
+sk:{n:"Slovenčina",sub:"Overená servisná história",mech:"Mechanik",buy:"Kupujúci",mT:"Nový servisný záznam",mL:"Dátum sa doplní automaticky. Záznam bude trvalo priradený k vozidlu.",vin:"VIN číslo",vinPh:"17-miestne VIN",vinE:"VIN musí mať presne 17 znakov (písmená a čísla, bez I, O, Q).",scan:"Naskenovať foťákom",scanning:"Skenujem…",km:"Stav kilometrov",kmE:"Zadajte stav kilometrov.",desc:"Popis opravy",descPh:"Výmena oleja, filtrov a predných bŕzd",descE:"Popíšte vykonanú opravu.",save:"Uložiť záznam",ok:"Záznam úspešne uložený",okB:"VIN {0} · {1} · dátum {2} (automaticky). Vozidlo má teraz {3} záznamov.",bT:"Overte históriu auta",bL:"Zadajte VIN a zistite, či bolo auto servisované pravidelne a koľko naozaj najazdilo.",search:"Vyhľadať",demo:"Vyskúšajte demo VIN:",none:"Pre toto VIN nemáme žiadne záznamy.",found:"Vozidlo nájdené",recs:"Záznamov",per:"Obdobie",rng:"Rozsah kilometrov",lockT:"Detaily opráv sú uzamknuté",fullT:"Kompletná história",trBusy:"Prekladám…",trDone:"Automaticky preložené",trOrig:"Zobraziť originál",trShow:"Zobraziť preklad",trFail:"Preklad nedostupný",trRetry:"Skúsiť znova",unl:"Odomknúť kompletnú históriu za 5 €",fine:"Platíte len raz · Apple Pay / Google Pay",pT:"Kompletná servisná história",pS:"Jednorazová platba · 5,00 €",cancel:"Zrušiť",appr:"Schvaľujem platbu…",wait:"Neopúšťajte aplikáciu",paid:"Platba schválená",thx:"História je odomknutá. Ďakujeme!",blur:"Výmena ?????? a ????????, kontrola ???????? ??? ?????"},
+en:{n:"English",sub:"Verified service history",mech:"Mechanic",buy:"Buyer",mT:"New service record",mL:"The date is added automatically. The record is permanently linked to the vehicle.",vin:"VIN",vinPh:"17-character VIN",vinE:"VIN must be exactly 17 characters (letters and digits, no I, O, Q).",scan:"Scan with camera",scanning:"Scanning…",km:"Mileage",kmE:"Enter the mileage.",desc:"Work description",descPh:"Oil, filters and front brakes replaced",descE:"Describe the work performed.",save:"Save record",ok:"Record saved successfully",okB:"VIN {0} · {1} · date {2} (automatic). The vehicle now has {3} records.",bT:"Check a car's history",bL:"Enter a VIN to see whether the car was serviced regularly and how far it has really driven.",search:"Search",demo:"Try a demo VIN:",none:"We have no records for this VIN.",found:"Vehicle found",recs:"Records",per:"Period",rng:"Mileage range",lockT:"Repair details are locked",fullT:"Complete history",trBusy:"Translating…",trDone:"Auto-translated",trOrig:"Show original",trShow:"Show translation",trFail:"Translation unavailable",trRetry:"Retry",unl:"Unlock full history for €5",fine:"One-time payment · Apple Pay / Google Pay",pT:"Complete service history",pS:"One-time payment · €5.00",cancel:"Cancel",appr:"Approving payment…",wait:"Please stay in the app",paid:"Payment approved",thx:"History unlocked. Thank you!",blur:"Replaced ?????? and ????????, checked ???????? ??? ?????"},
+de:{n:"Deutsch",sub:"Geprüfte Servicehistorie",mech:"Mechaniker",buy:"Käufer",mT:"Neuer Serviceeintrag",mL:"Das Datum wird automatisch ergänzt. Der Eintrag wird dauerhaft dem Fahrzeug zugeordnet.",vin:"FIN / VIN",vinPh:"17-stellige VIN",vinE:"Die VIN muss genau 17 Zeichen haben (Buchstaben und Ziffern, ohne I, O, Q).",scan:"Mit Kamera scannen",scanning:"Scanne…",km:"Kilometerstand",kmE:"Kilometerstand eingeben.",desc:"Beschreibung der Arbeiten",descPh:"Öl, Filter und vordere Bremsen gewechselt",descE:"Durchgeführte Arbeiten beschreiben.",save:"Eintrag speichern",ok:"Eintrag erfolgreich gespeichert",okB:"VIN {0} · {1} · Datum {2} (automatisch). Das Fahrzeug hat jetzt {3} Einträge.",bT:"Fahrzeughistorie prüfen",bL:"VIN eingeben und prüfen, ob das Auto regelmäßig gewartet wurde und wie viel es wirklich gefahren ist.",search:"Suchen",demo:"Demo-VIN testen:",none:"Für diese VIN liegen keine Einträge vor.",found:"Fahrzeug gefunden",recs:"Einträge",per:"Zeitraum",rng:"Kilometerbereich",lockT:"Reparaturdetails sind gesperrt",fullT:"Vollständige Historie",unl:"Komplette Historie für 5 € freischalten",fine:"Einmalzahlung · Apple Pay / Google Pay",pT:"Komplette Servicehistorie",pS:"Einmalzahlung · 5,00 €",cancel:"Abbrechen",appr:"Zahlung wird bestätigt…",wait:"Bitte in der App bleiben",paid:"Zahlung bestätigt",thx:"Historie freigeschaltet. Danke!",blur:"?????? und ???????? gewechselt, ???????? ??? ?????"},
+es:{n:"Español",sub:"Historial de servicio verificado",mech:"Mecánico",buy:"Comprador",mT:"Nuevo registro de servicio",mL:"La fecha se añade automáticamente. El registro queda vinculado al vehículo de forma permanente.",vin:"VIN / bastidor",vinPh:"VIN de 17 caracteres",vinE:"El VIN debe tener exactamente 17 caracteres (letras y números, sin I, O, Q).",scan:"Escanear con la cámara",scanning:"Escaneando…",km:"Kilometraje",kmE:"Introduce el kilometraje.",desc:"Descripción de la reparación",descPh:"Cambio de aceite, filtros y frenos delanteros",descE:"Describe el trabajo realizado.",save:"Guardar registro",ok:"Registro guardado correctamente",okB:"VIN {0} · {1} · fecha {2} (automática). El vehículo tiene ahora {3} registros.",bT:"Consulta el historial del coche",bL:"Introduce el VIN y comprueba si el coche se revisó con regularidad y cuánto ha recorrido de verdad.",search:"Buscar",demo:"Prueba un VIN de demostración:",none:"No tenemos registros de este VIN.",found:"Vehículo encontrado",recs:"Registros",per:"Periodo",rng:"Rango de kilometraje",lockT:"Detalles de reparación bloqueados",fullT:"Historial completo",unl:"Desbloquear historial completo por 5 €",fine:"Pago único · Apple Pay / Google Pay",pT:"Historial de servicio completo",pS:"Pago único · 5,00 €",cancel:"Cancelar",appr:"Aprobando el pago…",wait:"No cierres la aplicación",paid:"Pago aprobado",thx:"Historial desbloqueado. ¡Gracias!",blur:"Cambio de ?????? y ????????, revisión ???????? ??? ?????"},
+fr:{n:"Français",sub:"Historique d'entretien vérifié",mech:"Mécanicien",buy:"Acheteur",mT:"Nouvelle fiche d'entretien",mL:"La date est ajoutée automatiquement. La fiche est liée définitivement au véhicule.",vin:"Numéro VIN",vinPh:"VIN à 17 caractères",vinE:"Le VIN doit comporter exactement 17 caractères (lettres et chiffres, sans I, O, Q).",scan:"Scanner avec la caméra",scanning:"Scan en cours…",km:"Kilométrage",kmE:"Saisissez le kilométrage.",desc:"Description de l'intervention",descPh:"Vidange, filtres et freins avant remplacés",descE:"Décrivez l'intervention effectuée.",save:"Enregistrer",ok:"Fiche enregistrée avec succès",okB:"VIN {0} · {1} · date {2} (automatique). Le véhicule compte maintenant {3} fiches.",bT:"Vérifiez l'historique d'une voiture",bL:"Saisissez un VIN pour savoir si la voiture a été entretenue régulièrement et son kilométrage réel.",search:"Rechercher",demo:"Essayez un VIN de démo :",none:"Nous n'avons aucun enregistrement pour ce VIN.",found:"Véhicule trouvé",recs:"Fiches",per:"Période",rng:"Plage de kilométrage",lockT:"Détails des réparations verrouillés",fullT:"Historique complet",unl:"Débloquer l'historique complet pour 5 €",fine:"Paiement unique · Apple Pay / Google Pay",pT:"Historique d'entretien complet",pS:"Paiement unique · 5,00 €",cancel:"Annuler",appr:"Validation du paiement…",wait:"Restez dans l'application",paid:"Paiement validé",thx:"Historique débloqué. Merci !",blur:"Remplacement ?????? et ????????, contrôle ???????? ??? ?????"},
+pl:{n:"Polski",sub:"Zweryfikowana historia serwisowa",mech:"Mechanik",buy:"Kupujący",mT:"Nowy wpis serwisowy",mL:"Data jest dodawana automatycznie. Wpis zostaje na stałe przypisany do pojazdu.",vin:"Numer VIN",vinPh:"17-znakowy VIN",vinE:"VIN musi mieć dokładnie 17 znaków (litery i cyfry, bez I, O, Q).",scan:"Skanuj aparatem",scanning:"Skanowanie…",km:"Przebieg",kmE:"Podaj przebieg.",desc:"Opis naprawy",descPh:"Wymiana oleju, filtrów i przednich hamulców",descE:"Opisz wykonaną naprawę.",save:"Zapisz wpis",ok:"Wpis zapisany pomyślnie",okB:"VIN {0} · {1} · data {2} (automatycznie). Pojazd ma teraz {3} wpisów.",bT:"Sprawdź historię auta",bL:"Wpisz VIN, aby sprawdzić, czy auto było regularnie serwisowane i ile naprawdę przejechało.",search:"Szukaj",demo:"Wypróbuj demo VIN:",none:"Nie mamy żadnych wpisów dla tego numeru VIN.",found:"Znaleziono pojazd",recs:"Wpisów",per:"Okres",rng:"Zakres przebiegu",lockT:"Szczegóły napraw są zablokowane",fullT:"Pełna historia",unl:"Odblokuj pełną historię za 5 €",fine:"Jednorazowa płatność · Apple Pay / Google Pay",pT:"Pełna historia serwisowa",pS:"Jednorazowa płatność · 5,00 €",cancel:"Anuluj",appr:"Zatwierdzanie płatności…",wait:"Nie zamykaj aplikacji",paid:"Płatność zatwierdzona",thx:"Historia odblokowana. Dziękujemy!",blur:"Wymiana ?????? i ????????, kontrola ???????? ??? ?????"},
+cs:{n:"Čeština",sub:"Ověřená servisní historie",mech:"Mechanik",buy:"Kupující",mT:"Nový servisní záznam",mL:"Datum se doplní automaticky. Záznam bude trvale přiřazen k vozidlu.",vin:"VIN číslo",vinPh:"17místné VIN",vinE:"VIN musí mít přesně 17 znaků (písmena a čísla, bez I, O, Q).",scan:"Naskenovat fotoaparátem",scanning:"Skenuji…",km:"Stav kilometrů",kmE:"Zadejte stav kilometrů.",desc:"Popis opravy",descPh:"Výměna oleje, filtrů a předních brzd",descE:"Popište provedenou opravu.",save:"Uložit záznam",ok:"Záznam úspěšně uložen",okB:"VIN {0} · {1} · datum {2} (automaticky). Vozidlo má nyní {3} záznamů.",bT:"Ověřte historii auta",bL:"Zadejte VIN a zjistěte, zda bylo auto pravidelně servisováno a kolik skutečně najelo.",search:"Vyhledat",demo:"Vyzkoušejte demo VIN:",none:"Pro toto VIN nemáme žádné záznamy.",found:"Vozidlo nalezeno",recs:"Záznamů",per:"Období",rng:"Rozsah kilometrů",lockT:"Detaily oprav jsou uzamčeny",fullT:"Kompletní historie",unl:"Odemknout kompletní historii za 5 €",fine:"Jednorázová platba · Apple Pay / Google Pay",pT:"Kompletní servisní historie",pS:"Jednorázová platba · 5,00 €",cancel:"Zrušit",appr:"Schvaluji platbu…",wait:"Neopouštějte aplikaci",paid:"Platba schválena",thx:"Historie odemčena. Děkujeme!",blur:"Výměna ?????? a ????????, kontrola ???????? ??? ?????"}
+};
+const K=["n","sub","mech","buy","mT","mL","vin","vinPh","vinE","scan","scanning","km","kmE","desc","descPh","descE","save","ok","okB","bT","bL","search","demo","none","found","recs","per","rng","fullT","dn","dnb"];
+const A={
+hu:["Magyar","Ellenőrzött szervizelőzmények","Szerelő","Vásárló","Új szervizbejegyzés","A dátum automatikusan kerül rögzítésre. A bejegyzés véglegesen a járműhöz tartozik.","Alvázszám (VIN)","17 karakteres VIN","A VIN pontosan 17 karakter legyen (betűk és számok, I, O, Q nélkül).","Beolvasás kamerával","Beolvasás…","Kilométeróra-állás","Adja meg a kilométerállást.","Javítás leírása","Olaj, szűrők és első fékek cseréje","Írja le az elvégzett munkát.","Bejegyzés mentése","Bejegyzés sikeresen mentve","VIN {0} · {1} · dátum {2} (automatikus). A járműnek most {3} bejegyzése van.","Ellenőrizze az autó előzményeit","Adja meg a VIN-t, és nézze meg, rendszeresen szervizelték-e az autót, és valójában mennyit futott.","Keresés","Próbáljon ki egy demó VIN-t:","Ehhez a VIN-hez nincs bejegyzésünk.","Jármű megtalálva","Bejegyzések","Időszak","Kilométer-tartomány","Teljes előzmények","Az alkalmazás ingyenes. Ha hasznos, támogathatja a projektet.","Támogatás"],
+it:["Italiano","Cronologia di manutenzione verificata","Meccanico","Acquirente","Nuovo intervento di manutenzione","La data viene aggiunta automaticamente. Il record resta collegato al veicolo in modo permanente.","Numero VIN","VIN di 17 caratteri","Il VIN deve avere esattamente 17 caratteri (lettere e numeri, senza I, O, Q).","Scansiona con la fotocamera","Scansione…","Chilometraggio","Inserisci il chilometraggio.","Descrizione dell'intervento","Cambio olio, filtri e freni anteriori","Descrivi il lavoro eseguito.","Salva record","Record salvato con successo","VIN {0} · {1} · data {2} (automatica). Il veicolo ha ora {3} record.","Controlla la storia dell'auto","Inserisci il VIN per vedere se l'auto è stata tagliandata regolarmente e quanto ha percorso davvero.","Cerca","Prova un VIN demo:","Non abbiamo record per questo VIN.","Veicolo trovato","Record","Periodo","Intervallo chilometri","Storico completo","L'app è gratuita. Se ti è utile, puoi sostenere il progetto.","Dona"],
+pt:["Português","Histórico de manutenção verificado","Mecânico","Comprador","Novo registo de manutenção","A data é adicionada automaticamente. O registo fica associado ao veículo de forma permanente.","Número VIN (chassi)","VIN de 17 caracteres","O VIN deve ter exatamente 17 caracteres (letras e números, sem I, O, Q).","Digitalizar com a câmara","A digitalizar…","Quilometragem","Introduza a quilometragem.","Descrição da reparação","Troca de óleo, filtros e travões dianteiros","Descreva o trabalho realizado.","Guardar registo","Registo guardado com sucesso","VIN {0} · {1} · data {2} (automática). O veículo tem agora {3} registos.","Verifique o histórico do carro","Introduza o VIN para ver se o carro foi revisto regularmente e quanto andou realmente.","Pesquisar","Experimente um VIN de demonstração:","Não temos registos para este VIN.","Veículo encontrado","Registos","Período","Intervalo de quilómetros","Histórico completo","A app é gratuita. Se for útil, pode apoiar o projeto.","Doar"],
+ru:["Русский","Проверенная история обслуживания","Механик","Покупатель","Новая запись об обслуживании","Дата добавляется автоматически. Запись навсегда привязывается к автомобилю.","VIN-номер","17-значный VIN","VIN должен содержать ровно 17 символов (буквы и цифры, без I, O, Q).","Сканировать камерой","Сканирование…","Пробег","Введите пробег.","Описание ремонта","Замена масла, фильтров и передних тормозов","Опишите выполненные работы.","Сохранить запись","Запись успешно сохранена","VIN {0} · {1} · дата {2} (автоматически). Теперь у автомобиля записей: {3}.","Проверьте историю авто","Введите VIN и узнайте, регулярно ли обслуживали авто и сколько оно реально проехало.","Найти","Попробуйте демо-VIN:","По этому VIN записей нет.","Автомобиль найден","Записей","Период","Диапазон пробега","Полная история","Приложение бесплатное. Если оно вам полезно, можете поддержать проект.","Поддержать"],
+uk:["Українська","Перевірена історія обслуговування","Механік","Покупець","Новий запис про обслуговування","Дата додається автоматично. Запис назавжди прив'язується до автомобіля.","VIN-номер","17-значний VIN","VIN має містити рівно 17 символів (літери та цифри, без I, O, Q).","Сканувати камерою","Сканування…","Пробіг","Введіть пробіг.","Опис ремонту","Заміна оливи, фільтрів і передніх гальм","Опишіть виконані роботи.","Зберегти запис","Запис успішно збережено","VIN {0} · {1} · дата {2} (автоматично). Тепер авто має записів: {3}.","Перевірте історію авто","Введіть VIN і дізнайтеся, чи авто регулярно обслуговували та скільки воно справді проїхало.","Шукати","Спробуйте демо-VIN:","Для цього VIN записів немає.","Автомобіль знайдено","Записів","Період","Діапазон пробігу","Повна історія","Застосунок безкоштовний. Якщо він корисний, можете підтримати проєкт.","Підтримати"],
+ro:["Română","Istoric de service verificat","Mecanic","Cumpărător","Înregistrare nouă de service","Data se adaugă automat. Înregistrarea este asociată permanent vehiculului.","Număr VIN","VIN de 17 caractere","VIN-ul trebuie să aibă exact 17 caractere (litere și cifre, fără I, O, Q).","Scanează cu camera","Se scanează…","Kilometraj","Introdu kilometrajul.","Descrierea reparației","Schimb ulei, filtre și plăcuțe de frână față","Descrie lucrarea efectuată.","Salvează înregistrarea","Înregistrare salvată cu succes","VIN {0} · {1} · data {2} (automat). Vehiculul are acum {3} înregistrări.","Verifică istoricul mașinii","Introdu VIN-ul pentru a vedea dacă mașina a fost întreținută regulat și cât a parcurs de fapt.","Caută","Încearcă un VIN demo:","Nu avem înregistrări pentru acest VIN.","Vehicul găsit","Înregistrări","Perioadă","Interval de kilometri","Istoric complet","Aplicația este gratuită. Dacă te ajută, poți susține proiectul.","Donează"],
+nl:["Nederlands","Geverifieerde onderhoudshistorie","Monteur","Koper","Nieuw onderhoudsrecord","De datum wordt automatisch toegevoegd. Het record blijft permanent aan het voertuig gekoppeld.","VIN-nummer","VIN van 17 tekens","De VIN moet precies 17 tekens hebben (letters en cijfers, zonder I, O, Q).","Scannen met camera","Scannen…","Kilometerstand","Voer de kilometerstand in.","Beschrijving van de reparatie","Olie, filters en voorremmen vervangen","Beschrijf het uitgevoerde werk.","Record opslaan","Record succesvol opgeslagen","VIN {0} · {1} · datum {2} (automatisch). Het voertuig heeft nu {3} records.","Controleer de geschiedenis van een auto","Voer een VIN in om te zien of de auto regelmatig is onderhouden en hoeveel hij echt heeft gereden.","Zoeken","Probeer een demo-VIN:","Voor deze VIN hebben we geen records.","Voertuig gevonden","Records","Periode","Kilometerbereik","Volledige historie","De app is gratis. Als hij je helpt, kun je het project steunen.","Doneren"],
+tr:["Türkçe","Doğrulanmış servis geçmişi","Tamirci","Alıcı","Yeni servis kaydı","Tarih otomatik eklenir. Kayıt araca kalıcı olarak bağlanır.","VIN numarası","17 karakterli VIN","VIN tam 17 karakter olmalıdır (harf ve rakam, I, O, Q hariç).","Kamerayla tara","Taranıyor…","Kilometre","Kilometreyi girin.","Onarım açıklaması","Yağ, filtre ve ön fren değişimi","Yapılan işi açıklayın.","Kaydı kaydet","Kayıt başarıyla kaydedildi","VIN {0} · {1} · tarih {2} (otomatik). Aracın şimdi {3} kaydı var.","Aracın geçmişini kontrol edin","VIN girin; araç düzenli bakım görmüş mü ve gerçekte ne kadar yol yapmış öğrenin.","Ara","Demo VIN deneyin:","Bu VIN için kayıt yok.","Araç bulundu","Kayıt","Dönem","Kilometre aralığı","Tam geçmiş","Uygulama ücretsizdir. İşinize yararsa projeyi destekleyebilirsiniz.","Bağış yap"],
+ar:["العربية","سجل صيانة موثّق","ميكانيكي","مشترٍ","سجل صيانة جديد","يُضاف التاريخ تلقائيًا. يُربط السجل بالمركبة بشكل دائم.","رقم الهيكل (VIN)","VIN من 17 خانة","يجب أن يتكون VIN من 17 خانة بالضبط (حروف وأرقام، بدون I وO وQ).","مسح بالكاميرا","جارٍ المسح…","عدد الكيلومترات","أدخل عدد الكيلومترات.","وصف الإصلاح","تغيير الزيت والفلاتر والفرامل الأمامية","صف العمل المنجز.","حفظ السجل","تم حفظ السجل بنجاح","VIN {0} · {1} · التاريخ {2} (تلقائي). لدى المركبة الآن {3} سجلات.","تحقق من تاريخ السيارة","أدخل VIN لمعرفة ما إذا كانت السيارة تُصان بانتظام وكم قطعت فعليًا.","بحث","جرّب VIN تجريبيًا:","لا توجد سجلات لهذا الـ VIN.","تم العثور على المركبة","السجلات","الفترة","نطاق الكيلومترات","السجل الكامل","التطبيق مجاني. إذا أفادك يمكنك دعم المشروع.","تبرّع"],
+hi:["हिन्दी","सत्यापित सर्विस इतिहास","मैकेनिक","खरीदार","नई सर्विस प्रविष्टि","तारीख अपने आप जुड़ जाती है। प्रविष्टि हमेशा के लिए वाहन से जुड़ी रहती है।","VIN नंबर","17 अक्षरों का VIN","VIN ठीक 17 अक्षरों का होना चाहिए (अक्षर और अंक, I, O, Q के बिना)।","कैमरे से स्कैन करें","स्कैन हो रहा है…","किलोमीटर","किलोमीटर दर्ज करें।","मरम्मत का विवरण","तेल, फ़िल्टर और आगे के ब्रेक बदले गए","किया गया काम लिखें।","प्रविष्टि सहेजें","प्रविष्टि सफलतापूर्वक सहेजी गई","VIN {0} · {1} · तारीख {2} (अपने आप)। वाहन की अब {3} प्रविष्टियाँ हैं।","कार का इतिहास जाँचें","VIN दर्ज करें और जानें कि कार की नियमित सर्विस हुई या नहीं और वह वास्तव में कितनी चली है।","खोजें","डेमो VIN आज़माएँ:","इस VIN के लिए हमारे पास कोई रिकॉर्ड नहीं है।","वाहन मिला","प्रविष्टियाँ","अवधि","किलोमीटर सीमा","पूरा इतिहास","ऐप मुफ़्त है। अगर यह आपके काम आए तो आप प्रोजेक्ट का समर्थन कर सकते हैं।","दान करें"],
+zh:["简体中文","经过验证的保养记录","技师","买家","新增保养记录","日期会自动添加。记录将永久关联到该车辆。","VIN 车架号","17 位 VIN","VIN 必须正好 17 个字符(字母和数字,不含 I、O、Q)。","用相机扫描","正在扫描…","里程","请输入里程。","维修说明","更换机油、滤清器和前刹车","请描述所做的维修。","保存记录","记录保存成功","VIN {0} · {1} · 日期 {2}(自动)。该车现有 {3} 条记录。","查询车辆历史","输入 VIN,查看车辆是否定期保养以及真实行驶里程。","搜索","试试演示 VIN:","我们没有该 VIN 的记录。","已找到车辆","记录数","时间段","里程范围","完整历史","本应用免费。如果对您有帮助,欢迎支持本项目。","捐赠"],
+ja:["日本語","検証済みの整備履歴","整備士","購入者","新しい整備記録","日付は自動で追加されます。記録は車両に恒久的に紐づきます。","VIN(車台番号)","17桁のVIN","VINは17文字ちょうどで入力してください(英数字、I・O・Qを除く)。","カメラでスキャン","スキャン中…","走行距離","走行距離を入力してください。","修理内容","オイル、フィルター、フロントブレーキの交換","実施した作業を入力してください。","記録を保存","記録を保存しました","VIN {0} · {1} · 日付 {2}(自動)。この車両の記録は現在 {3} 件です。","車の履歴を確認","VINを入力して、定期的に整備されていたか、実際の走行距離を確認できます。","検索","デモVINを試す:","このVINの記録はありません。","車両が見つかりました","記録数","期間","走行距離の範囲","完全な履歴","このアプリは無料です。役に立ったら、プロジェクトを支援できます。","寄付する"],
+ko:["한국어","검증된 정비 이력","정비사","구매자","새 정비 기록","날짜는 자동으로 추가됩니다. 기록은 차량에 영구적으로 연결됩니다.","VIN(차대번호)","17자리 VIN","VIN은 정확히 17자여야 합니다(영문과 숫자, I·O·Q 제외).","카메라로 스캔","스캔 중…","주행거리","주행거리를 입력하세요.","수리 내용","엔진오일, 필터, 앞 브레이크 교체","수행한 작업을 입력하세요.","기록 저장","기록이 저장되었습니다","VIN {0} · {1} · 날짜 {2}(자동). 이 차량의 기록은 현재 {3}건입니다.","차량 이력 확인","VIN을 입력해 정기 점검 여부와 실제 주행거리를 확인하세요.","검색","데모 VIN을 사용해 보세요:","이 VIN에 대한 기록이 없습니다.","차량을 찾았습니다","기록 수","기간","주행거리 범위","전체 이력","이 앱은 무료입니다. 도움이 되셨다면 프로젝트를 후원해 주세요.","후원하기"],
+id:["Bahasa Indonesia","Riwayat servis terverifikasi","Mekanik","Pembeli","Catatan servis baru","Tanggal ditambahkan otomatis. Catatan terhubung permanen dengan kendaraan.","Nomor VIN","VIN 17 karakter","VIN harus tepat 17 karakter (huruf dan angka, tanpa I, O, Q).","Pindai dengan kamera","Memindai…","Jarak tempuh","Masukkan jarak tempuh.","Deskripsi perbaikan","Ganti oli, filter, dan rem depan","Jelaskan pekerjaan yang dilakukan.","Simpan catatan","Catatan berhasil disimpan","VIN {0} · {1} · tanggal {2} (otomatis). Kendaraan kini memiliki {3} catatan.","Periksa riwayat mobil","Masukkan VIN untuk melihat apakah mobil rutin diservis dan berapa jarak tempuh sebenarnya.","Cari","Coba VIN demo:","Kami tidak memiliki catatan untuk VIN ini.","Kendaraan ditemukan","Catatan","Periode","Rentang kilometer","Riwayat lengkap","Aplikasi ini gratis. Jika membantu, Anda dapat mendukung proyek ini.","Donasi"],
+vi:["Tiếng Việt","Lịch sử bảo dưỡng đã xác minh","Thợ máy","Người mua","Hồ sơ bảo dưỡng mới","Ngày được thêm tự động. Hồ sơ gắn vĩnh viễn với xe.","Số VIN","VIN 17 ký tự","VIN phải có đúng 17 ký tự (chữ và số, không gồm I, O, Q).","Quét bằng camera","Đang quét…","Số km","Nhập số km.","Mô tả sửa chữa","Thay dầu, bộ lọc và phanh trước","Mô tả công việc đã thực hiện.","Lưu hồ sơ","Đã lưu hồ sơ thành công","VIN {0} · {1} · ngày {2} (tự động). Xe hiện có {3} hồ sơ.","Kiểm tra lịch sử xe","Nhập VIN để xem xe có được bảo dưỡng định kỳ không và thực tế đã chạy bao nhiêu.","Tìm kiếm","Thử VIN mẫu:","Chúng tôi không có hồ sơ cho VIN này.","Đã tìm thấy xe","Hồ sơ","Giai đoạn","Khoảng số km","Lịch sử đầy đủ","Ứng dụng miễn phí. Nếu hữu ích, bạn có thể ủng hộ dự án.","Ủng hộ"],
+sv:["Svenska","Verifierad servicehistorik","Mekaniker","Köpare","Ny serviceanteckning","Datumet läggs till automatiskt. Anteckningen kopplas permanent till fordonet.","VIN-nummer","VIN med 17 tecken","VIN måste vara exakt 17 tecken (bokstäver och siffror, utan I, O, Q).","Skanna med kameran","Skannar…","Mätarställning","Ange mätarställning.","Beskrivning av reparation","Byte av olja, filter och främre bromsar","Beskriv det utförda arbetet.","Spara anteckning","Anteckningen sparades","VIN {0} · {1} · datum {2} (automatiskt). Fordonet har nu {3} anteckningar.","Kontrollera bilens historik","Ange VIN för att se om bilen servats regelbundet och hur långt den verkligen har kört.","Sök","Prova ett demo-VIN:","Vi har inga uppgifter för detta VIN.","Fordon hittat","Anteckningar","Period","Körsträcka","Fullständig historik","Appen är gratis. Om den hjälper dig kan du stödja projektet.","Donera"]};
+Object.keys(A).forEach(l=>{T[l]={};K.forEach((k,i)=>{T[l][k]=A[l][i]})});
+const DN={sk:["Aplikácia je zadarmo. Ak vám pomáha, môžete projekt podporiť.","Podporiť projekt"],en:["This app is free. If it helps you, you can support the project.","Donate"],de:["Die App ist kostenlos. Wenn sie dir hilft, kannst du das Projekt unterstützen.","Spenden"],es:["La app es gratuita. Si te ayuda, puedes apoyar el proyecto.","Donar"],fr:["L'appli est gratuite. Si elle vous aide, vous pouvez soutenir le projet.","Faire un don"],pl:["Aplikacja jest darmowa. Jeśli ci pomaga, możesz wesprzeć projekt.","Wesprzyj"],cs:["Aplikace je zdarma. Pokud vám pomáhá, můžete projekt podpořit.","Podpořit projekt"]};
+Object.keys(DN).forEach(k=>{T[k].dn=DN[k][0];T[k].dnb=DN[k][1]});
+const DONATE_URL="https://buymeacoffee.com/autoverify";
+const LOC={hu:"hu-HU",it:"it-IT",pt:"pt-PT",ru:"ru-RU",uk:"uk-UA",ro:"ro-RO",nl:"nl-NL",tr:"tr-TR",ar:"ar",hi:"hi-IN",zh:"zh-CN",ja:"ja-JP",ko:"ko-KR",id:"id-ID",vi:"vi-VN",sv:"sv-SE",sk:"sk-SK",en:"en-GB",de:"de-DE",es:"es-ES",fr:"fr-FR",pl:"pl-PL",cs:"cs-CZ"};
+const Ctx=createContext();
+const CACHE={};
+async function translateTexts(texts,lang){
+  const need=[...new Set(texts)].filter(x=>!CACHE[lang+"|"+x]);
+  if(!need.length)return true;
+  if(!window.claude)throw {code:"no_runtime"};
+  const sample=await window.claude.use("sample");
+  if(!sample)throw {code:"unavailable"};
+  const r=await sample("Translate each string of this JSON array into "+T[lang].n+" (language code "+lang+"). They are short car repair descriptions. If a string is already in that language, return it unchanged. Keep numbers and technical part names accurate. Reply ONLY with a JSON array of strings, same length and order, no markdown.\n"+JSON.stringify(need),{modelTier:"quick"});
+  let out;try{const t=r.text;out=JSON.parse(t.slice(t.indexOf("["),t.lastIndexOf("]")+1))}catch(e){throw {code:"bad_format"}}
+  if(!Array.isArray(out)||out.length!==need.length)throw {code:"bad_format"};
+  need.forEach((x,i)=>{CACHE[lang+"|"+x]=String(out[i])});
+  return true;
+}
+const useT=()=>useContext(Ctx);
+
+// ---------- IKONY ----------
+const P={scan:"M3 7V5a2 2 0 0 1 2-2h2 M17 3h2a2 2 0 0 1 2 2v2 M21 17v2a2 2 0 0 1-2 2h-2 M7 21H5a2 2 0 0 1-2-2v-2 M7 12h10",
+wrench:"M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z",
+search:"M11 3a8 8 0 1 0 0 16 8 8 0 0 0 0-16z M21 21l-4.3-4.3",
+ok:"M22 11.08V12a10 10 0 1 1-5.93-9.14 M22 4L12 14.01l-3-3",
+lock:"M5 11h14a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2z M7 11V7a5 5 0 0 1 10 0v4",
+unlock:"M5 11h14a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2z M7 11V7a5 5 0 0 1 9.9-1",
+car:"M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2 M7 17h9 M5 17a2 2 0 1 0 4 0 2 2 0 0 0-4 0 M15 17a2 2 0 1 0 4 0 2 2 0 0 0-4 0",
+shield:"M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z M9 12l2 2 4-4",
+gauge:"M12 14l4-4 M3.34 19a10 10 0 1 1 17.32 0",
+cal:"M8 2v4 M16 2v4 M3 6h18v15H3z M3 10h18",
+alert:"M12 8v4 M12 16h.01 M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z",
+file:"M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z M14 2v6h6 M8 13h8 M8 17h8",
+hash:"M4 9h16 M4 15h16 M10 3L8 21 M16 3l-2 18",
+heart:"M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7z",
+globe:"M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z M2 12h20 M12 2a15 15 0 0 1 0 20 15 15 0 0 1 0-20z"};
+const Ic=({n,s=20})=>h("svg",{width:s,height:s,viewBox:"0 0 24 24",fill:"none",stroke:"currentColor",strokeWidth:2,strokeLinecap:"round",strokeLinejoin:"round"},
+  P[n].split(" M").map((d,i)=>h("path",{key:i,d:(i?"M":"")+d})));
+
+const today=()=>{const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")};
+
+const SEED={
+"WVWZZZ1KZBW123456":[{date:"2019-03-12",km:48200,text:"Oil and oil filter change, chassis inspection"},{date:"2021-05-20",km:91500,text:"Timing belt and water pump replaced"},{date:"2023-09-02",km:134800,text:"Front brake discs and pads replaced, oil change"}],
+"WBAFR9C50BC123789":[{date:"2022-01-18",km:67000,text:"Major service, all filters and fluids replaced"},{date:"2024-06-30",km:112300,text:"Clutch and dual-mass flywheel replaced"}],
+"TMBJJ7NE5J0456123":[{date:"2020-11-05",km:22100,text:"First warranty inspection, oil change"},{date:"2022-11-10",km:58900,text:"Brake fluid and pollen filter replaced"},{date:"2024-10-14",km:97400,text:"Rear brakes replaced, wheel alignment"},{date:"2025-12-01",km:121000,text:"Summer tyres fitted, A/C check"}]};
+
+function Mechanic({db,save}){
+  const t=useT(),{tr,fd,fk}=t;
+  const [vin,setVin]=useState(""),[km,setKm]=useState(""),[text,setText]=useState("");
+  const [scan,setScan]=useState(false),[ok,setOk]=useState(null),[errs,setErrs]=useState({});
+  const doScan=()=>{setScan(true);setOk(null);setTimeout(()=>{setVin("WVWZZZ1KZBW123456");setScan(false)},1500)};
+  const submit=async()=>{
+    const e={};
+    if(!/^[A-HJ-NPR-Z0-9]{17}$/.test(vin))e.vin=tr("vinE");
+    if(!km)e.km=tr("kmE");
+    if(!text.trim())e.text=tr("descE");
+    setErrs(e);if(Object.keys(e).length)return;
+    const rec={date:today(),km:parseInt(km,10),text:text.trim()};
+    try{const n=await save(vin,rec);setOk({vin,...rec,n});setVin("");setKm("");setText("")}catch(x){setErrs({text:"Error: "+x.message})}
+  };
+  return h("div",null,
+    h("h2",null,tr("mT")),h("p",{className:"lead"},tr("mL")),
+    h("label",null,tr("vin")),
+    h("div",{className:"field "+(scan?"scanfx":"")},h(Ic,{n:"hash"}),
+      h("input",{className:"mono",value:vin,maxLength:17,placeholder:tr("vinPh"),autoCapitalize:"characters",onChange:e=>{setVin(e.target.value.toUpperCase().replace(/[^A-Z0-9]/g,""));setOk(null)}}),
+      h("span",{className:"cnt"},vin.length+"/17")),
+    errs.vin&&h("div",{className:"err"},errs.vin),
+    h("button",{className:"btn ghost",onClick:doScan,disabled:scan},h(Ic,{n:"scan"}),scan?tr("scanning"):tr("scan")),
+    h("label",null,tr("km")),
+    h("div",{className:"field"},h(Ic,{n:"gauge"}),h("input",{inputMode:"numeric",value:km,placeholder:"125000",onChange:e=>{setKm(e.target.value.replace(/\D/g,"").slice(0,7));setOk(null)}}),h("span",{className:"cnt"},"km")),
+    errs.km&&h("div",{className:"err"},errs.km),
+    h("label",null,tr("desc")),
+    h("div",{className:"field"},h("textarea",{value:text,placeholder:tr("descPh"),onChange:e=>{setText(e.target.value);setOk(null)}})),
+    errs.text&&h("div",{className:"err"},errs.text),
+    h("button",{className:"btn",onClick:submit},h(Ic,{n:"file"}),tr("save")),
+    ok&&h("div",{className:"toast"},h(Ic,{n:"ok",s:22}),h("div",null,h("b",null,tr("ok")),tr("okB",[ok.vin,fk(ok.km),fd(ok.date),ok.n]))));
+}
+
+function PaySheet({onDone,onClose}){
+  const {tr}=useT(),[busy,setBusy]=useState(false);
+  const pay=()=>{setBusy(true);setTimeout(onDone,1600)};
+  return h("div",{className:"sheet-bg",onClick:()=>!busy&&onClose()},
+    h("div",{className:"sheet",onClick:e=>e.stopPropagation()},
+      busy?h("div",{style:{textAlign:"center"}},h("div",{className:"spin"}),h("div",{style:{fontWeight:700}},tr("appr")),h("div",{className:"sub"},tr("wait")))
+      :h("div",null,h("div",{style:{fontWeight:800,fontSize:18}},tr("pT")),h("div",{className:"sub",style:{marginTop:4}},tr("pS")),
+        h("button",{className:"pbtn ap",onClick:pay},"\uF8FF Pay"),
+        h("button",{className:"pbtn gp",onClick:pay},h("b",null,"G")," Pay"),
+        h("button",{className:"back",onClick:onClose},tr("cancel")))));
+}
+
+function Buyer({db,lookup}){
+  const {tr,fd,fk,lang}=useT();
+  const unlocked=true;
+  const [q,setQ]=useState(""),[res,setRes]=useState(null),[st,setSt]=useState("idle"),[orig,setOrig]=useState(false),[err,setErr]=useState("");
+  const doTr=async(rs)=>{if(!window.claude){setSt("idle");return}setSt("busy");try{const ok=await translateTexts(rs.map(r=>r.text),lang);setSt(ok?"done":"fail")}catch(e){setErr((e&&(e.code||e.message))||"error");setSt("fail")}};
+  const shown=r=>(!orig&&st==="done"&&CACHE[lang+"|"+r.text])||r.text;
+  const search=async v=>{const vin=(typeof v==="string"?v:q).trim().toUpperCase();setQ(vin);setOrig(false);setSt("idle");
+    let list=null;try{list=await lookup(vin)}catch(e){list=null}
+    setRes({vin,recs:list});if(list)doTr(list)};
+  const recs=res&&res.recs,kms=recs&&recs.map(r=>r.km);
+  useEffect(()=>{if(recs&&res)doTr(recs)},[lang]);
+  return h("div",null,
+    h("h2",null,tr("bT")),h("p",{className:"lead"},tr("bL")),
+    h("div",{className:"field"},h(Ic,{n:"search"}),h("input",{className:"mono",value:q,maxLength:17,placeholder:"VIN",onChange:e=>setQ(e.target.value.toUpperCase().replace(/[^A-Z0-9]/g,"")),onKeyDown:e=>e.key==="Enter"&&search()})),
+    h("button",{className:"btn",style:{marginTop:12},onClick:()=>search(),disabled:!q},h(Ic,{n:"search"}),tr("search")),
+    !LIVE&&h("div",{className:"chips"},h("span",{className:"sub",style:{width:"100%"}},tr("demo")),Object.keys(db).slice(0,3).map(v=>h("span",{key:v,className:"chip",onClick:()=>search(v)},v))),
+    res&&!recs&&h("div",{className:"msg"},h(Ic,{n:"alert",s:24}),tr("none")),
+    recs&&h("div",null,
+      h("div",{className:"card"},
+        h("div",{style:{display:"flex",gap:10,alignItems:"center"}},h("span",{style:{color:"var(--ok)"}},h(Ic,{n:"shield",s:26})),h("div",null,h("div",{className:"sub"},tr("found")),h("div",{className:"vin"},res.vin))),
+        h("div",{className:"stats"},
+          h("div",{className:"stat"},h("small",null,h(Ic,{n:"file",s:13}),tr("recs")),h("div",null,recs.length)),
+          h("div",{className:"stat"},h("small",null,h(Ic,{n:"cal",s:13}),tr("per")),h("div",null,recs[0].date.slice(0,4)+"–"+recs[recs.length-1].date.slice(0,4))),
+          h("div",{className:"stat",style:{gridColumn:"span 2"}},h("small",null,h(Ic,{n:"gauge",s:13}),tr("rng")),h("div",null,fk(Math.min(...kms))+" – "+fk(Math.max(...kms)))))),
+      h("div",{style:{marginTop:18,fontWeight:700,display:"flex",gap:8,alignItems:"center"}},h(Ic,{n:unlocked?"unlock":"lock",s:18}),unlocked?tr("fullT"):tr("lockT")),
+      st==="fail"&&h("div",{className:"trbar"},h(Ic,{n:"globe",s:14}),tr("trFail")+" ("+err+")",h("button",{onClick:()=>doTr(recs)},tr("trRetry"))),
+      (st==="busy"||st==="done")&&h("div",{className:"trbar"},h(Ic,{n:"globe",s:14}),st==="busy"?tr("trBusy"):tr("trDone"),st==="done"&&h("button",{onClick:()=>setOrig(o=>!o)},orig?tr("trShow"):tr("trOrig"))),
+      h("div",{className:"tl"},recs.map((r,i)=>h("div",{key:i,className:"it"+(unlocked?"":" lk")},
+        unlocked?[h("div",{className:"d",key:"d"},fd(r.date)),h("div",{className:"k",key:"k"},fk(r.km)),h("div",{className:"t",key:"t"},shown(r))]
+        :h("div",{className:"blur"},h("div",{className:"d"},"?? . ?? . ????"),h("div",{className:"k"},"?? ??? km"),h("div",{className:"t"},tr("blur")))))),
+      null));
+}
+
+function Donate(){
+  const {tr}=useT();
+  return h("footer",{className:"don"},h("div",{className:"credit"},"Designed by Roman Hantak"));
+}
+
+function App(){
+  let init="en";
+  try{const s=localStorage.getItem("av_lang");const b=(navigator.language||"en").slice(0,2);init=T[s]?s:(T[b]?b:"en")}catch(e){}
+  const [lang,setLang]=useState(init),[mode,setMode]=useState("mech"),[db,setDb]=useState(SEED);
+  const tr=(k,a)=>{let s=(T[lang][k]||T.en[k]||k);(a||[]).forEach((v,i)=>{s=s.replace("{"+i+"}",v)});return s};
+  const fd=s=>{const[y,m,d]=s.split("-").map(Number);return new Date(y,m-1,d).toLocaleDateString(LOC[lang],{day:"numeric",month:"numeric",year:"numeric"})};
+  const fk=n=>Number(n).toLocaleString(LOC[lang])+" km";
+  document.documentElement.lang=lang;document.documentElement.dir=lang==="ar"?"rtl":"ltr";
+  const save=async(vin,rec)=>{
+    if(LIVE){const r=await rpc("add_record",{p_vin:vin,p_km:rec.km,p_text:rec.text});return r.count}
+    const n=(db[vin]||[]).length+1;setDb(d=>({...d,[vin]:[...(d[vin]||[]),rec]}));return n};
+  const lookup=async(vin)=>{
+    if(LIVE){const r=await rpc("get_history",{p_vin:vin});return r&&r.length?r.map(x=>({date:x.service_date,km:x.km,text:x.description})):null}
+    return db[vin]?[...db[vin]].sort((a,b)=>a.date.localeCompare(b.date)||a.km-b.km):null};
+  const chg=v=>{setLang(v);document.documentElement.lang=v;try{localStorage.setItem("av_lang",v)}catch(e){}};
+  return h(Ctx.Provider,{value:{tr,fd,fk,lang}},h("div",{className:"app"},
+    h("div",{className:"top"},h("div",{className:"logo"},h(Ic,{n:"car",s:22})),
+      h("div",{className:"grow"},h("div",{className:"brand"},"Auto",h("span",null,"Verify")),h("div",{className:"sub"},tr("sub"))),
+      h("div",{className:"lang"},h(Ic,{n:"globe",s:16}),h("select",{value:lang,"aria-label":"Language",onChange:e=>chg(e.target.value)},Object.keys(T).map(k=>h("option",{key:k,value:k},T[k].n))))),
+    h("div",{className:"seg"},
+      h("button",{className:mode==="mech"?"on":"",onClick:()=>setMode("mech")},h(Ic,{n:"wrench",s:17}),tr("mech")),
+      h("button",{className:mode==="buy"?"on":"",onClick:()=>setMode("buy")},h(Ic,{n:"search",s:17}),tr("buy"))),
+    h("main",null,mode==="mech"?h(Mechanic,{db,save}):h(Buyer,{db,lookup})),h(Donate)));
+}
+ReactDOM.createRoot(document.getElementById("root")).render(h(App));
+}
+</script>
+</body>
+</html>
