@@ -85,13 +85,14 @@ Cars have VINs all over the world, so the app is available in 23 languages. Pick
 
 Slovenčina, English, Deutsch, Español, Français, Polski, Čeština, Magyar, Italiano, Português, Русский, Українська, Română, Nederlands, Türkçe, العربية, हिन्दी, 简体中文, 日本語, 한국어, Bahasa Indonesia, Tiếng Việt, Svenska.
 
-Repair descriptions are shown in the language in which the mechanic wrote them.
+Repair descriptions are **translated automatically** into the language you picked, so a description written in English can be read in your own language. Tap **Show original** to see what the mechanic actually wrote.
 
 ---
 
 ## ℹ️ Important information
 
 - **Records are entered by workshops and mechanics.** AutoVerify does not check or guarantee that they are correct or complete. The history is an informative aid and does not replace an inspection of the car or professional advice.
+- **Automatic translation is machine-made** and may contain mistakes. To translate, the description text is sent to the free [MyMemory](https://mymemory.translated.net/) translation service. The free service has a daily limit per user, so very heavy use may temporarily fall back to the original text.
 - **Only this is stored:** VIN, mileage, work description and date. No personal data about owners.
 - The app is free to use.
 

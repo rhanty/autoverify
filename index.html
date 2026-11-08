@@ -10,12 +10,13 @@
 <title>AutoVerify</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2064%2064'%3E%3Cdefs%3E%3ClinearGradient%20id='g'%20x1='0'%20y1='0'%20x2='1'%20y2='1'%3E%3Cstop%20offset='0'%20stop-color='%23ff6a1a'/%3E%3Cstop%20offset='1'%20stop-color='%23c2410c'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20width='64'%20height='64'%20rx='14'%20fill='url%28%23g%29'/%3E%3Cg%20transform='translate%2814%2014%29%20scale%281.5%29'%20fill='none'%20stroke='white'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Cpath%20d='M19%2017h2c.6%200%201-.4%201-1v-3c0-.9-.7-1.7-1.5-1.9C18.7%2010.6%2016%2010%2016%2010s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6%200-1.1.4-1.4.9l-1.4%202.9A3.7%203.7%200%200%200%202%2012v4c0%20.6.4%201%201%201h2%20M7%2017h9%20M5%2017a2%202%200%201%200%204%200%202%202%200%200%200-4%200%20M15%2017a2%202%200%201%200%204%200%202%202%200%200%200-4%200'/%3E%3C/g%3E%3C/svg%3E">
 <style>
-:root{color-scheme:dark;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+:root{color-scheme:dark;box-sizing:border-box;
 --bg:#0b0d12;--card:#151922;--card2:#1c212c;--line:#262c39;--tx:#eef1f6;--mut:#8b93a5;--acc:#ff6a1a;--ok:#22c55e;--err:#ef4444}
 *{box-sizing:border-box}
-html,body{margin:0;min-height:100%;background:#0b0d12;color:#eef1f6;font-family:-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
-#root{min-height:100vh;display:flex;justify-content:center}
-.app{width:100%;max-width:430px;min-height:100vh;display:flex;flex-direction:column;background:radial-gradient(120% 50% at 50% 0,#1a1f2c 0,#0b0d12 60%)}
+html,body{margin:0;height:100%;overflow:hidden;overscroll-behavior:none;background:#0b0d12;color:#eef1f6;font-family:-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+body{position:fixed;inset:0;width:100%}
+#root{position:fixed;inset:0;display:flex;justify-content:center}
+.app{width:100%;max-width:430px;height:100%;padding-top:env(safe-area-inset-top,0px);display:flex;flex-direction:column;background:radial-gradient(120% 50% at 50% 0,#1a1f2c 0,#0b0d12 60%)}
 .top{padding:18px 20px 8px;display:flex;align-items:center;gap:10px}
 .logo{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#ff6a1a,#c2410c);display:grid;place-items:center;flex:none}
 .grow{flex:1;min-width:0}
@@ -28,7 +29,7 @@ html,body{margin:0;min-height:100%;background:#0b0d12;color:#eef1f6;font-family:
 .seg button{border:0;background:none;color:var(--mut);padding:10px;border-radius:10px;font:600 14px sans-serif;display:flex;gap:6px;align-items:center;justify-content:center;cursor:pointer}
 .seg button.on{background:var(--card2);color:var(--tx);box-shadow:inset 0 0 0 1px var(--line)}
 .seg button.on svg{color:var(--acc)}
-main{padding:12px 20px 30px;flex:1}
+main{padding:12px 20px 24px;flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:none}
 h2{margin:8px 0 4px;font-size:22px}
 p.lead{margin:0 0 16px;color:var(--mut);font-size:14px;line-height:1.45}
 label{display:block;font-size:12px;font-weight:600;color:var(--mut);margin:14px 0 6px;text-transform:uppercase;letter-spacing:.6px}
@@ -75,7 +76,7 @@ textarea{resize:none;min-height:96px;line-height:1.4}
 .spin{width:44px;height:44px;border:4px solid var(--line);border-top-color:var(--acc);border-radius:50%;animation:rot .8s linear infinite;margin:20px auto}
 @keyframes rot{to{transform:rotate(360deg)}}
 .back{background:none;border:0;color:var(--mut);font:600 13px sans-serif;cursor:pointer;margin-top:14px;width:100%}
-.don{margin:0 20px calc(20px + env(safe-area-inset-bottom,0px));padding:16px;border-top:1px solid var(--line);text-align:center}
+.don{margin:0 20px;padding:8px 0 calc(8px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--line);text-align:center;flex:none}
 .don a{display:inline-flex;gap:6px;align-items:center;margin-top:10px;padding:10px 18px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--tx);font:600 14px sans-serif;text-decoration:none}
 .don a svg{color:#f43f5e}
 .mono{direction:ltr}
@@ -84,7 +85,7 @@ textarea{resize:none;min-height:96px;line-height:1.4}
 [dir=rtl] .it:before{left:auto;right:-21px}
 .trbar{display:flex;gap:6px;align-items:center;margin-top:10px;font-size:12px;color:var(--mut)}
 .trbar button{margin-left:auto;background:none;border:0;color:var(--acc);font:600 12px sans-serif;cursor:pointer}
-.credit{margin-top:14px;font-size:10px;letter-spacing:.4px;color:#5b6375}
+.credit{margin-top:0;font-size:10px;letter-spacing:.4px;color:#5b6375}
 .boot{padding:40px 24px;text-align:center;color:#8b93a5;font:14px sans-serif;line-height:1.5}
 </style>
 </head>
@@ -178,18 +179,47 @@ async function ocrCanvas(canvas,psm){
 }
 async function scanVin(file){return ocrCanvas(await prepImage(file))}
 const CACHE={};
+const LSK="av_tr|";
+function lsGet(k){try{return localStorage.getItem(k)}catch(e){return null}}
+function lsSet(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+const MMCODE={zh:"zh-CN",pt:"pt-PT"};
+function chunkText(t,max){
+  if(new TextEncoder().encode(t).length<=max)return [t];
+  const parts=t.split(/(?<=[.!?;])\s+/),out=[];let cur="";
+  for(const p of parts){const n=cur?cur+" "+p:p;if(new TextEncoder().encode(n).length>max&&cur){out.push(cur);cur=p}else cur=n}
+  if(cur)out.push(cur);return out;
+}
+async function myTranslate(text,lang){
+  const code=MMCODE[lang]||lang,res=[];
+  for(const part of chunkText(text,450)){
+    const r=await fetch("https://api.mymemory.translated.net/get?q="+encodeURIComponent(part)+"&langpair=Autodetect|"+encodeURIComponent(code));
+    if(!r.ok)throw {code:"http_"+r.status};
+    const j=await r.json(),t=(j&&j.responseData&&j.responseData.translatedText)||"";
+    if(/MYMEMORY WARNING/i.test(t))throw {code:"quota"};
+    if(/PLEASE SELECT TWO DISTINCT/i.test(t)){res.push(part);continue}
+    if(String(j.responseStatus)!=="200"||!t)throw {code:"bad_response"};
+    res.push(t);
+  }
+  return res.join(" ");
+}
 async function translateTexts(texts,lang){
-  const need=[...new Set(texts)].filter(x=>!CACHE[lang+"|"+x]);
+  const uniq=[...new Set(texts)];
+  uniq.forEach(x=>{if(!CACHE[lang+"|"+x]){const v=lsGet(LSK+lang+"|"+x);if(v)CACHE[lang+"|"+x]=v}});
+  const need=uniq.filter(x=>!CACHE[lang+"|"+x]);
   if(!need.length)return true;
-  if(!window.claude)throw {code:"no_runtime"};
-  const sample=await window.claude.use("sample");
-  if(!sample)throw {code:"unavailable"};
-  const r=await sample("Translate each string of this JSON array into "+T[lang].n+" (language code "+lang+"). They are short car repair descriptions. If a string is already in that language, return it unchanged. Keep numbers and technical part names accurate. Reply ONLY with a JSON array of strings, same length and order, no markdown.\n"+JSON.stringify(need),{modelTier:"quick"});
-  let out;try{const t=r.text;out=JSON.parse(t.slice(t.indexOf("["),t.lastIndexOf("]")+1))}catch(e){throw {code:"bad_format"}}
-  if(!Array.isArray(out)||out.length!==need.length)throw {code:"bad_format"};
-  need.forEach((x,i)=>{CACHE[lang+"|"+x]=String(out[i])});
+  if(window.claude){
+    const sample=await window.claude.use("sample");
+    if(!sample)throw {code:"unavailable"};
+    const r=await sample("Translate each string of this JSON array into "+T[lang].n+" (language code "+lang+"). They are short car repair descriptions. If a string is already in that language, return it unchanged. Keep numbers and technical part names accurate. Reply ONLY with a JSON array of strings, same length and order, no markdown.\n"+JSON.stringify(need),{modelTier:"quick"});
+    let out;try{const t=r.text;out=JSON.parse(t.slice(t.indexOf("["),t.lastIndexOf("]")+1))}catch(e){throw {code:"bad_format"}}
+    if(!Array.isArray(out)||out.length!==need.length)throw {code:"bad_format"};
+    need.forEach((x,i)=>{CACHE[lang+"|"+x]=String(out[i])});
+    return true;
+  }
+  for(const x of need){const t=await myTranslate(x,lang);CACHE[lang+"|"+x]=t;lsSet(LSK+lang+"|"+x,t)}
   return true;
 }
+
 const useT=()=>useContext(Ctx);
 
 // ---------- IKONY ----------
@@ -278,7 +308,7 @@ function Buyer({db,lookup}){
   const {tr,fd,fk,lang}=useT();
   const unlocked=true;
   const [q,setQ]=useState(""),[res,setRes]=useState(null),[st,setSt]=useState("idle"),[orig,setOrig]=useState(false),[err,setErr]=useState(""),[serr,setSerr]=useState("");
-  const doTr=async(rs)=>{if(!window.claude){setSt("idle");return}setSt("busy");try{const ok=await translateTexts(rs.map(r=>r.text),lang);setSt(ok?"done":"fail")}catch(e){setErr((e&&(e.code||e.message))||"error");setSt("fail")}};
+  const doTr=async(rs)=>{setSt("busy");try{const ok=await translateTexts(rs.map(r=>r.text),lang);setSt(ok?"done":"fail")}catch(e){setErr((e&&(e.code||e.message))||"error");setSt("fail")}};
   const shown=r=>(!orig&&st==="done"&&CACHE[lang+"|"+r.text])||r.text;
   const search=async v=>{const vin=(typeof v==="string"?v:q).trim().toUpperCase();setQ(vin);setOrig(false);setSt("idle");
     let list=null;try{list=await lookup(vin)}catch(e){list=null}
